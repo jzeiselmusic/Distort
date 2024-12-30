@@ -16,19 +16,15 @@ DistortAudioProcessorEditor::DistortAudioProcessorEditor (DistortAudioProcessor&
 {
     setSize(500, 300);
     setResizable(true, true);
-    rotarySlider = new CartoonRotarySlider;
-    rotarySlider->setRange(0.0, 1.0);
-    rotarySlider->setValue(0.5);
-    rotarySlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    rotarySlider->setLookAndFeel(&rotarySliderLookAndFeel);
-    rotarySlider->setBounds(getWidth()/4, getHeight()/4, getWidth()/2, getHeight()/2);
-
-    addAndMakeVisible(*rotarySlider);
+    
+    allocateAllSliders();
+    createAllSliders();
+    setBoundsAllSliders();
 }
 
 DistortAudioProcessorEditor::~DistortAudioProcessorEditor()
 {
-    delete rotarySlider;
+    deallocateAllSliders();
 }
 
 //==============================================================================
@@ -40,7 +36,43 @@ void DistortAudioProcessorEditor::paint (juce::Graphics& g)
 
 void DistortAudioProcessorEditor::resized()
 {
-    if (rotarySlider) {
-        rotarySlider->setBounds(getWidth()/4, getHeight()/4, getWidth()/2, getHeight()/2);
+    setBoundsAllSliders();
+}
+
+void DistortAudioProcessorEditor::createAllSliders(void) {
+    for (auto slider : sliders) {
+        slider->setRange(0.0, 1.0);
+        slider->setValue(0.5);
+        slider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+        slider->setLookAndFeel(&rotarySliderLookAndFeel);
+        addAndMakeVisible(*slider);
+    }
+}
+
+void DistortAudioProcessorEditor::allocateAllSliders(void) {
+    for (auto i = 0; i < NUM_SLIDERS; i++) {
+        sliders.push_back(new CartoonRotarySlider);
+    }
+}
+
+void DistortAudioProcessorEditor::deallocateAllSliders(void) {
+    for (auto slider : sliders) {
+        delete slider;
+    }
+}
+
+void DistortAudioProcessorEditor::setBoundsAllSliders(void) {
+    int separatorWidth = getWidth() / (NUM_SLIDERS*2 + NUM_SLIDERS + 1);
+    int separatorHeight = getHeight() / 4;
+    int idx = 0;
+    for (auto slider : sliders) {
+        if (slider) {
+            slider->setBounds(
+                  separatorWidth + idx * separatorWidth * 3,
+                  separatorHeight,
+                  separatorWidth * 2,
+                  separatorHeight * 2);
+        }
+        idx++;
     }
 }

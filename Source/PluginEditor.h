@@ -27,12 +27,17 @@ public:
     void resized() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    DistortAudioProcessor& audioProcessor;
+    const int NUM_SLIDERS = 3;
     
+    std::vector<CartoonRotarySlider*> sliders;
+    DistortAudioProcessor& audioProcessor;
     CartoonRotarySlider* rotarySlider;
     CartoonLookAndFeel rotarySliderLookAndFeel;
+    
+    void createAllSliders(void);
+    void allocateAllSliders(void);
+    void deallocateAllSliders(void);
+    void setBoundsAllSliders(void);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortAudioProcessorEditor)
 };
