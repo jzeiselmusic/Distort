@@ -44,10 +44,11 @@ void DistortAudioProcessorEditor::createAllSliders(void) {
     auto idx = 0;
     for (auto slider : sliders) {
         if (idx == 0 || idx == 2) {
-            slider->setRange(0.5, 1.5);
+            slider->setRange(0.001, 10.0);
+            slider->setSkewFactorFromMidPoint(1.0); // Set skew midpoint
         }
         else {
-            slider->setRange(0.0, 1.0);
+            slider->setRange(0.001, 1.0);
         }
         slider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
         slider->setLookAndFeel(&rotarySliderLookAndFeel);

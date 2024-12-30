@@ -29,15 +29,19 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override
     {
         // Calculate the vertical distance moved
+        float startValueLog = juce::Decibels::gainToDecibels(startValue);
+        float maxValueLog = juce::Decibels::gainToDecibels(getMaximum());
+        float minValueLog = juce::Decibels::gainToDecibels(getMinimum());
         float distanceDragged = startDragY - event.position.y; // Negative for downward drag
 
         // Scale the vertical drag distance to a change in slider value
-        float range = getMaximum() - getMinimum();
-        float sensitivity = 0.0035f; // Adjust sensitivity as needed
-        float newValue = startValue + distanceDragged * range * sensitivity;
+        float rangeLog = maxValueLog - minValueLog;
+        float sensitivity = 0.001f; // Adjust sensitivity as needed
+        float newValueLog = startValueLog + distanceDragged * sensitivity * rangeLog;
+        float newValueGain = juce::Decibels::decibelsToGain(newValueLog);
 
         // Set the new slider value, clamping it to the slider's range
-        setValue(juce::jlimit<double>(getMinimum(), getMaximum(), static_cast<double>(newValue)));
+        setValue(juce::jlimit<double>(getMinimum(), getMaximum(), static_cast<double>(newValueGain)));
     }
 
 private:
