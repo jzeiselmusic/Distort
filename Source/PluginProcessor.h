@@ -10,6 +10,12 @@
 
 #include <JuceHeader.h>
 
+typedef enum {
+    PRE_GAIN,
+    THRESHOLD,
+    POST_GAIN
+} rotaryType;
+
 //==============================================================================
 /**
 */
@@ -55,8 +61,13 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    
+    float getParamValue(rotaryType);
+    void setParamValue(float val, rotaryType idx);
+    
 private:
+    std::vector<float> params = {1.0, 1.0, 1.0};
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortAudioProcessor)
 };

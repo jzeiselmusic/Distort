@@ -37,16 +37,25 @@ void DistortAudioProcessorEditor::paint (juce::Graphics& g)
 void DistortAudioProcessorEditor::resized()
 {
     setBoundsAllSliders();
+    updateValuesAllSliders();
 }
 
 void DistortAudioProcessorEditor::createAllSliders(void) {
+    auto idx = 0;
     for (auto slider : sliders) {
-        slider->setRange(0.0, 1.0);
-        slider->setValue(0.5);
+        if (idx == 0 || idx == 2) {
+            slider->setRange(0.5, 1.5);
+        }
+        else {
+            slider->setRange(0.0, 1.0);
+        }
         slider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
         slider->setLookAndFeel(&rotarySliderLookAndFeel);
+        slider->addListener(this);
         addAndMakeVisible(*slider);
+        idx++;
     }
+    updateValuesAllSliders();
 }
 
 void DistortAudioProcessorEditor::allocateAllSliders(void) {
@@ -64,7 +73,7 @@ void DistortAudioProcessorEditor::deallocateAllSliders(void) {
 void DistortAudioProcessorEditor::setBoundsAllSliders(void) {
     int separatorWidth = getWidth() / (NUM_SLIDERS*2 + NUM_SLIDERS + 1);
     int separatorHeight = getHeight() / 4;
-    int idx = 0;
+    auto idx = 0;
     for (auto slider : sliders) {
         if (slider) {
             slider->setBounds(
@@ -74,5 +83,24 @@ void DistortAudioProcessorEditor::setBoundsAllSliders(void) {
                   separatorHeight * 2);
         }
         idx++;
+    }
+}
+
+void DistortAudioProcessorEditor::updateValuesAllSliders(void) {
+    auto idx = 0;
+    for (auto slider : sliders) {
+        slider->setValue(audioProcessor.getParamValue(rotaryType(idx)));
+        idx++;
+    }
+}
+
+void DistortAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
+{
+    auto idx = 0;
+    for (auto slider_ptr : sliders) {
+        if (slider == slider_ptr) {
+            audioProcessor.setParamValue(slider->getValue(), rotaryType(idx));
+        }
+        idx ++;
     }
 }

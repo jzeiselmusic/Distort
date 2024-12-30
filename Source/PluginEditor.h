@@ -16,7 +16,7 @@
 //==============================================================================
 /**
 */
-class DistortAudioProcessorEditor  : public juce::AudioProcessorEditor
+class DistortAudioProcessorEditor  : public juce::AudioProcessorEditor, juce::Slider::Listener
 {
 public:
     DistortAudioProcessorEditor (DistortAudioProcessor&);
@@ -25,6 +25,7 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    void sliderValueChanged (juce::Slider* slider) override;
 
 private:
     const int NUM_SLIDERS = 3;
@@ -37,6 +38,7 @@ private:
     void allocateAllSliders(void);
     void deallocateAllSliders(void);
     void setBoundsAllSliders(void);
+    void updateValuesAllSliders(void);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortAudioProcessorEditor)
 };

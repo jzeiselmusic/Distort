@@ -183,6 +183,14 @@ void DistortAudioProcessor::setStateInformation (const void* data, int sizeInByt
     // whose contents will have been created by the getStateInformation() call.
 }
 
+float DistortAudioProcessor::getParamValue(rotaryType val) {
+    return params[val];
+}
+
+void DistortAudioProcessor::setParamValue(float val, rotaryType idx) {
+    params[idx] = val;
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
