@@ -31,7 +31,6 @@ private:
     
     std::vector<CartoonRotarySlider*> sliders;
     DistortAudioProcessor& audioProcessor;
-    CartoonRotarySlider* rotarySlider;
     CartoonLookAndFeel rotarySliderLookAndFeel;
     
     void createAllSliders(void);
