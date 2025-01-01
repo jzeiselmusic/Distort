@@ -50,8 +50,6 @@ void DistortAudioProcessorEditor::createAllSliders(void) {
         else {
             slider->setRange(0.001, 1.0);
         }
-        slider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-        slider->setLookAndFeel(&rotarySliderLookAndFeel);
         slider->addListener(this);
         addAndMakeVisible(*slider);
         idx++;
