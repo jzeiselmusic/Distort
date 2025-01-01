@@ -148,8 +148,16 @@ void DistortAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
             // pre-gain stage
             *sample *= params[0];
             
+            // TODO: oversampling to remove aliasing
+            
             // normalized threshold tanh stage
-            *sample = params[1] * tanh(*sample / params[1]);
+            // *sample = params[1] * tanh(*sample / params[1]);
+            
+            // normalized threshold arctan stage
+            // *sample = params[1] * (2 / M_PI) * atan( (M_PI / 2) * *sample / params[1]);
+            
+            // normalized threshold logistic function
+            
             
             // post-gain stage
             *sample *= params[2];
