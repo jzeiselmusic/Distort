@@ -154,13 +154,13 @@ void DistortAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
 
     juce::dsp::AudioBlock<float> audioBlock(buffer);
     
-    oversamplingFilter->processSamplesUp(audioBlock);
+    auto upsampledBlock = oversamplingFilter->processSamplesUp(audioBlock);
     
-    for (int channel = 0; channel < audioBlock.getNumChannels(); ++channel)
+    for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        auto* channelData = audioBlock.getChannelPointer (channel);
+        auto* channelData = upsampledBlock.getChannelPointer (channel);
 
-        for (int i = 0; i < audioBlock.getNumSamples(); i++) {
+        for (int i = 0; i < upsampledBlock.getNumSamples(); i++) {
             
             float* sample = &channelData[i];
             
