@@ -76,6 +76,7 @@ public:
 private:
     std::vector<float> params = {1.0, 1.0, 1.0};
     
+    juce::dsp::BallisticsFilter<float> envelopeFollower;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortAudioProcessor)

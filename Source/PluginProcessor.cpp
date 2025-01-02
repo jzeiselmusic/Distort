@@ -22,6 +22,10 @@ DistortAudioProcessor::DistortAudioProcessor()
                        )
 #endif
 {
+    envelopeFollower.prepare((juce::dsp::ProcessSpec) { 44100, 1, 2});
+    envelopeFollower.setAttackTime(1);
+    envelopeFollower.setReleaseTime(10);
+    envelopeFollower.reset(0.0);
 }
 
 DistortAudioProcessor::~DistortAudioProcessor()
@@ -143,6 +147,7 @@ void DistortAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
         auto* channelData = buffer.getWritePointer (channel);
 
         for (int i = 0; i < buffer.getNumSamples(); i++) {
+            
             float* sample = &channelData[i];
             
             // pre-gain stage
@@ -150,17 +155,22 @@ void DistortAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
             
             // TODO: oversampling to remove aliasing
             
+            // create fuzz by pushing values up by 40% of env level
+            float envLevel = envelopeFollower.processSample(channel, *sample);
+            *sample += 0.4 * envLevel;
+            
             // normalized threshold tanh stage
             // *sample = params[1] * tanh(*sample / params[1]);
             
             // normalized threshold arctan stage
-            // *sample = params[1] * (2 / M_PI) * atan( (M_PI / 2) * *sample / params[1]);
+            *sample = params[1] * (2 / M_PI) * atan( (M_PI / 2) * *sample / params[1]);
             
             // normalized threshold logistic function
             // *sample = logisticFunction(*sample, params[1]);
             
             // normalized sigmoid function
-            *sample = sigmoidFunction(*sample, params[1]);
+            // *sample = sigmoidFunction(*sample, params[1]);
+            
             
             // post-gain stage
             *sample *= params[2];
