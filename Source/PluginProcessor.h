@@ -24,6 +24,10 @@ inline float sigmoidFunction(float input, float threshold) {
     return threshold * (input / (1 + fabs(input/threshold)));
 }
 
+inline float arctanFunction(float input, float threshold) {
+    return threshold * (2 / M_PI) * atan( (M_PI / 2) * input / threshold);
+}
+
 //==============================================================================
 /**
 */
@@ -74,10 +78,10 @@ public:
     void setParamValue(float val, rotaryType idx);
     
 private:
-    std::vector<float> params = {1.0, 1.0, 1.0};
+    std::vector<float> params = {1.0, 1.0, 0.0, 1.0};
     
     juce::dsp::BallisticsFilter<float> envelopeFollower;
-    
+    std::unique_ptr<juce::dsp::Oversampling<float>> oversamplingFilter;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortAudioProcessor)
 };

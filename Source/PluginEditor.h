@@ -28,7 +28,7 @@ public:
     void sliderValueChanged (juce::Slider* slider) override;
 
 private:
-    const int NUM_SLIDERS = 3;
+    const int NUM_SLIDERS = 4;
     
     std::vector<CartoonRotarySlider*> sliders;
     DistortAudioProcessor& audioProcessor;

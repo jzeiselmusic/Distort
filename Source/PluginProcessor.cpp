@@ -26,6 +26,8 @@ DistortAudioProcessor::DistortAudioProcessor()
     envelopeFollower.setAttackTime(1);
     envelopeFollower.setReleaseTime(10);
     envelopeFollower.reset(0.0);
+    
+    oversamplingFilter = std::make_unique<juce::dsp::Oversampling<float>>(2, 2, juce::dsp::Oversampling<float>::FilterType::filterHalfBandPolyphaseIIR);
 }
 
 DistortAudioProcessor::~DistortAudioProcessor()
@@ -99,6 +101,14 @@ void DistortAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = static_cast<uint32_t>(samplesPerBlock);
+    spec.numChannels = static_cast<uint32_t>(getTotalNumInputChannels());
+
+    oversamplingFilter->initProcessing(static_cast<size_t>(samplesPerBlock));
+    oversamplingFilter->reset();
 }
 
 void DistortAudioProcessor::releaseResources()
@@ -142,28 +152,30 @@ void DistortAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    juce::dsp::AudioBlock<float> audioBlock(buffer);
+    
+    oversamplingFilter->processSamplesUp(audioBlock);
+    
+    for (int channel = 0; channel < audioBlock.getNumChannels(); ++channel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
+        auto* channelData = audioBlock.getChannelPointer (channel);
 
-        for (int i = 0; i < buffer.getNumSamples(); i++) {
+        for (int i = 0; i < audioBlock.getNumSamples(); i++) {
             
             float* sample = &channelData[i];
             
             // pre-gain stage
             *sample *= params[0];
             
-            // TODO: oversampling to remove aliasing
-            
             // create fuzz by pushing values up by 40% of env level
             float envLevel = envelopeFollower.processSample(channel, *sample);
-            *sample += 0.4 * envLevel;
+            *sample += params[2] * fabs(envLevel);
             
             // normalized threshold tanh stage
             // *sample = params[1] * tanh(*sample / params[1]);
             
             // normalized threshold arctan stage
-            *sample = params[1] * (2 / M_PI) * atan( (M_PI / 2) * *sample / params[1]);
+            *sample = arctanFunction(*sample, params[1]);
             
             // normalized threshold logistic function
             // *sample = logisticFunction(*sample, params[1]);
@@ -173,9 +185,11 @@ void DistortAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
             
             
             // post-gain stage
-            *sample *= params[2];
+            *sample *= params[3];
         }
     }
+    
+    oversamplingFilter->processSamplesDown(audioBlock);
 }
 
 //==============================================================================
