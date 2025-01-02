@@ -157,7 +157,10 @@ void DistortAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
             // *sample = params[1] * (2 / M_PI) * atan( (M_PI / 2) * *sample / params[1]);
             
             // normalized threshold logistic function
+            // *sample = logisticFunction(*sample, params[1]);
             
+            // normalized sigmoid function
+            *sample = sigmoidFunction(*sample, params[1]);
             
             // post-gain stage
             *sample *= params[2];

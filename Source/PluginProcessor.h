@@ -16,6 +16,14 @@ typedef enum {
     POST_GAIN
 } rotaryType;
 
+inline float logisticFunction(float input, float threshold) {
+    return threshold * (2 * (1 / (1 + exp(-input/threshold))) - 1);
+}
+
+inline float sigmoidFunction(float input, float threshold) {
+    return threshold * (input / (1 + fabs(input/threshold)));
+}
+
 //==============================================================================
 /**
 */
@@ -67,6 +75,7 @@ public:
     
 private:
     std::vector<float> params = {1.0, 1.0, 1.0};
+    
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortAudioProcessor)
